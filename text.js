@@ -11,12 +11,11 @@ window.onload = function(e){
 		{
 			//fileDisplayArea.innerText = reader.result;
 			var string = reader.result;
-			console.log(string);
-			console.log("---");
+			//console.log(string);
+			//console.log("---");
 			var splittedLines = string.split("\n");
 			splittedLines.splice(0,1);	//Removes description line
-			console.log(splittedLines[0]);
-
+			splittedLines.splice(splittedLines.length - 1, 1);
 			var total = 0;
 			var transactions = new Array();
 
@@ -29,11 +28,13 @@ window.onload = function(e){
 			console.log("Total : " + total);
 			console.log("Average: " + total / splittedLines.length);
 
+			//console.log(splittedLines[splittedLines.length]);
 			fileDisplayArea.innerText = "Total Spent: $" + total.toFixed(2) + "\n" + "Average Spent per Trip: $" + (total / splittedLines.length).toFixed(2);
 
 			//Create chart
 			makeSpendGraph(transactions);
 			makeDayPieGraph(transactions);
+			makeLocPieGraph(transactions);
 		}
 		reader.readAsText(file);
 	});
@@ -62,11 +63,11 @@ function convertData(transactions)
 		{	
 			days.push(utcDate);
 			parsedData.push([utcDate, transactions[i].cost]);
-			console.log("adding: " + utcDate + "," + transactions[i].cost);
+			//console.log("adding: " + utcDate + "," + transactions[i].cost);
 		}
 		else
 		{
-			console.log("else: " + transactions[i].cost);
+			//console.log("else: " + transactions[i].cost);
 			for(var j = 0; j < parsedData.length; j++)
 			{
 				if(parsedData[j][0] == utcDate)
@@ -157,14 +158,44 @@ function spendByDay(transactions)
 		{	
 			days.push(utcDate);
 			parsedData.push([utcDate, transactions[i].cost]);
-			console.log("adding: " + utcDate + "," + transactions[i].cost);
+			//console.log("adding: " + utcDate + "," + transactions[i].cost);
 		}
 		else
 		{
-			console.log("else: " + transactions[i].cost);
+			//console.log("else: " + transactions[i].cost);
 			for(var j = 0; j < parsedData.length; j++)
 			{
 				if(parsedData[j][0] == utcDate)
+				{
+					parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+				}
+			}
+		}
+	}
+	return parsedData;
+}
+//Takes all transactions and returns array of locations and amount spent at that location
+//in form [[LOCATION, AMOUNTSPENT],...]
+function spendByLoc(transactions)
+{
+	var groups = new Array();
+	var parsedData = new Array();
+	for(var i = 0; i < transactions.length; i++)
+	{
+		//Check for multiple transactions in a day
+		var group = transactions[i].group
+		if(groups.indexOf(group) == -1)
+		{	
+			groups.push(group);
+			parsedData.push([group, transactions[i].cost]);
+			//console.log("adding: " + group + "," + transactions[i].cost);
+		}
+		else
+		{
+			//console.log("else: " + transactions[i].cost);
+			for(var j = 0; j < parsedData.length; j++)
+			{
+				if(parsedData[j][0] == group)
 				{
 					parsedData[j][1] = transactions[i].cost + parsedData[j][1];
 				}
@@ -185,6 +216,40 @@ function makeDayPieGraph(transactions)
         },
         title: {
             text: 'Amount spent by day of the week'
+        },
+        tooltip: {
+    	    pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    color: '#000000',
+                    connectorColor: '#000000',
+                    format: '<b>{point.name}</b>: ${point.y:.2f}'
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Browser share',
+            data: newData
+        }]
+    });
+}
+function makeLocPieGraph(transactions)
+{
+	var newData = spendByLoc(transactions);
+	$('#pieChart2').highcharts({
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false
+        },
+        title: {
+            text: 'Amount spent by location'
         },
         tooltip: {
     	    pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'

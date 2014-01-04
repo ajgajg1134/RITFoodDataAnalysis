@@ -5,12 +5,12 @@ html {
 }
 
 #page-wrapper {
-  width: 90%;
+  width: 95%;
   background: #FFF;
   padding: 1em;
   margin: 1em auto;
   min-height: 300px;
-  border-top: 5px solid #69c773;
+  border-top: 5px solid #f36e21;
   box-shadow: 0 2px 10px rgba(0,0,0,0.8);
 }
 
