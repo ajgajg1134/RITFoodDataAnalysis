@@ -1,4 +1,11 @@
 window.onload = function(e){
+
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+	  // Great success! All the File APIs are supported.
+	} else {
+	  alert('The File APIs are not fully supported in this browser.');
+	}
+
 	var fileInput = document.getElementById('fileInput');
 	var fileDisplayArea = document.getElementById('fileDisplayArea');
 
@@ -129,10 +136,7 @@ function makeSpendGraph(transactions)
             min: 0
         },
         tooltip: {
-            formatter: function() {
-                    return '<b>'+ this.series.name +'</b><br/>'+
-                    Highcharts.dateFormat('%b %e', this.x) +': $'+ this.y;
-            }
+        	pointFormat: '{series.name}: <b>{point.y:.2f}</b><br/>'
         },
         
         series: [{
