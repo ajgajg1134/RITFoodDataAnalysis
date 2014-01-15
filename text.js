@@ -136,7 +136,7 @@ function makeSpendGraph(transactions)
             min: 0
         },
         tooltip: {
-        	pointFormat: '{series.name}: <b>{point.y:.2f}</b><br/>'
+        	pointFormat: '{series.name}: <b>${point.y:.2f}</b><br/>'
         },
         
         series: [{
