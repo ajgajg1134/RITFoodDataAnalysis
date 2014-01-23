@@ -8,13 +8,21 @@
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
+	<iframe hidden src="https://eservices.rit.edu/"></iframe>
 	<div id="page-wrapper">
-
 		<h1>RIT Food Data Analyzer</h1>
 		<div>
 			Upload your .csv food data file: 
 			<input type="file" id="fileInput"> <br />
-			To access your file go to <a href="https://www.rit.edu/eservices/">eservices</a>
+			To access your file go to <a href="https://www.rit.edu/eservices/">eservices</a> <br />
+			Line Graph Options: 
+			<select id="lineOptions" onchange="lineChange()">
+				<option value="all" > All </option>
+		   	    <option value="corner">Corner Store</option>
+		   	    <option value="nathans">Nathan's</option>
+		    	<option value="commons">Commons</option>
+		    	<option value="ctrl">Ctrl Alt Deli</option>
+			</select>
 		</div>
 		<div id="container" style="width:100%; height:400px;">
 		</div>
@@ -30,10 +38,10 @@
 				</td>
 			</tr>
 		</table>
+		
 		<pre id="fileDisplayArea"><pre>
-
 	</div>
-
+	
 	<script src="text.js"></script>
 </body>
 </html>

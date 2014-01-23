@@ -1,3 +1,5 @@
+var fileLoaded = 0;
+var transactions = new Array();
 window.onload = function(e){
 
 	if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -24,13 +26,15 @@ window.onload = function(e){
 			splittedLines.splice(0,1);	//Removes description line
 			splittedLines.splice(splittedLines.length - 1, 1);
 			var total = 0;
-			var transactions = new Array();
 
 			for(var i = 0; i < splittedLines.length; i++)
 			{
 				var extraSplit = splittedLines[i].split(",");
 				total += parseFloat(extraSplit[1]);
-				transactions.push(new transaction(splittedLines[i]));
+				if(!(extraSplit[3] == "Online Deposits"))
+				{
+					transactions.push(new transaction(splittedLines[i]));
+				}
 			}
 			console.log("Total : " + total);
 			console.log("Average: " + total / splittedLines.length);
@@ -42,9 +46,18 @@ window.onload = function(e){
 			makeSpendGraph(transactions);
 			makeDayPieGraph(transactions);
 			makeLocPieGraph(transactions);
+			fileLoaded = 1;
 		}
 		reader.readAsText(file);
 	});
+}
+//Updates line graph should user change drop down menu
+function lineChange()
+{
+	if(fileLoaded == 1)
+	{
+		makeSpendGraph(transactions);
+	}
 }
 function transaction(line)
 {
@@ -62,27 +75,64 @@ function convertData(transactions)
 	//console.log("Called");
 	var days = new Array();
 	var parsedData = new Array();
-	for(var i = 0; i < transactions.length; i++)
+	var lineOptions=document.getElementById("lineOptions");
+
+	if(lineOptions.options[lineOptions.selectedIndex].text == "All")
 	{
-		//Check for multiple transactions in a day
-		var utcDate = getUTC(transactions[i].date)
-		if(days.indexOf(utcDate) == -1)
-		{	
-			days.push(utcDate);
-			parsedData.push([utcDate, transactions[i].cost]);
-			//console.log("adding: " + utcDate + "," + transactions[i].cost);
-		}
-		else
+		for(var i = 0; i < transactions.length; i++)
 		{
-			//console.log("else: " + transactions[i].cost);
-			for(var j = 0; j < parsedData.length; j++)
+			//Check for multiple transactions in a day
+			var utcDate = getUTC(transactions[i].date)
+			if(days.indexOf(utcDate) == -1)
+			{	
+				days.push(utcDate);
+				parsedData.push([utcDate, transactions[i].cost]);
+				//console.log("adding: " + utcDate + "," + transactions[i].cost);
+			}
+			else
 			{
-				if(parsedData[j][0] == utcDate)
+				//console.log("else: " + transactions[i].cost);
+				for(var j = 0; j < parsedData.length; j++)
 				{
-					parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+					if(parsedData[j][0] == utcDate)
+					{
+						parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+					}
 				}
 			}
 		}
+	}
+	else if(lineOptions.options[lineOptions.selectedIndex].text == "Corner Store")
+	{
+		for(var i = 0; i < transactions.length; i++)
+		{
+			if(transactions[i].group == "Corner Store")
+			{
+				//Check for multiple transactions in a day
+				var utcDate = getUTC(transactions[i].date)
+				if(days.indexOf(utcDate) == -1)
+				{	
+					days.push(utcDate);
+					parsedData.push([utcDate, transactions[i].cost]);
+					//console.log("adding: " + utcDate + "," + transactions[i].cost);
+				}
+				else
+				{
+					//console.log("else: " + transactions[i].cost);
+					for(var j = 0; j < parsedData.length; j++)
+					{
+						if(parsedData[j][0] == utcDate)
+						{
+							parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+						}
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		console.log("You in trouble");
 	}
 	return parsedData;
 }
@@ -154,6 +204,7 @@ function spendByDay(transactions)
 {
 	var days = new Array();
 	var parsedData = new Array();
+
 	for(var i = 0; i < transactions.length; i++)
 	{
 		//Check for multiple transactions in a day
@@ -176,6 +227,7 @@ function spendByDay(transactions)
 			}
 		}
 	}
+
 	return parsedData;
 }
 //Takes all transactions and returns array of locations and amount spent at that location
