@@ -8,13 +8,15 @@
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
-	<iframe hidden src="https://eservices.rit.edu/"></iframe>
+	<!--
+		<iframe hidden src="https://sis.rit.edu/portalServices/exportfoodtranscsv.do?sdate=10012013&edate=01222014"></iframe>
+	-->
 	<div id="page-wrapper">
 		<h1>RIT Food Data Analyzer</h1>
 		<div>
 			Upload your .csv food data file: 
 			<input type="file" id="fileInput"> <br />
-			To access your file go to <a href="https://www.rit.edu/eservices/">eservices</a> <br />
+			To download your file <a href="download.html" target="_blank">click here</a><br />
 			Line Graph Options: 
 			<select id="lineOptions" onchange="lineChange()">
 				<option value="all" > All </option>

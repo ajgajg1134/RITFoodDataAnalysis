@@ -10,6 +10,31 @@ window.onload = function(e){
 
 	var fileInput = document.getElementById('fileInput');
 	var fileDisplayArea = document.getElementById('fileDisplayArea');
+	$.support.cors = true;
+	$.ajax({
+	    type: "GET",
+	    url: "https://sis.rit.edu/portalServices/exportfoodtranscsv.do?sdate=10012013&edate=01222014",
+	    headers: {"Origin":"sis.rit.edu"},
+	    //dataType: "json",
+	    success: function(data, textStatus) {
+	    	console.log(data);
+	        if (data.redirect) {
+	            // data.redirect contains the string URL to redirect to
+	            $.ajax({
+				    type: "GET",
+				    url: data.redirect,
+				    data: reqBody,
+				    dataType: "text",
+				    success: function(data, textStatus) {
+				        console.log(data);
+				    }
+				});
+	        }
+	        else {
+	            console.log("NOT REDIRECT");
+	        }
+	    }
+	});
 
 	fileInput.addEventListener('change', function(e) 
 	{
@@ -107,6 +132,34 @@ function convertData(transactions)
 		for(var i = 0; i < transactions.length; i++)
 		{
 			if(transactions[i].group == "Corner Store")
+			{
+				//Check for multiple transactions in a day
+				var utcDate = getUTC(transactions[i].date)
+				if(days.indexOf(utcDate) == -1)
+				{	
+					days.push(utcDate);
+					parsedData.push([utcDate, transactions[i].cost]);
+					//console.log("adding: " + utcDate + "," + transactions[i].cost);
+				}
+				else
+				{
+					//console.log("else: " + transactions[i].cost);
+					for(var j = 0; j < parsedData.length; j++)
+					{
+						if(parsedData[j][0] == utcDate)
+						{
+							parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+						}
+					}
+				}
+			}
+		}
+	}
+	else if (lineOptions.options[lineOptions.selectedIndex].text == "Nathan's")
+	{
+		for(var i = 0; i < transactions.length; i++)
+		{
+			if(transactions[i].group == "Nathan's Soup")
 			{
 				//Check for multiple transactions in a day
 				var utcDate = getUTC(transactions[i].date)
