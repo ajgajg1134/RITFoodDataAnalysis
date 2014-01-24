@@ -10,6 +10,7 @@ window.onload = function(e){
 
 	var fileInput = document.getElementById('fileInput');
 	var fileDisplayArea = document.getElementById('fileDisplayArea');
+	/*
 	$.support.cors = true;
 	$.ajax({
 	    type: "GET",
@@ -35,7 +36,7 @@ window.onload = function(e){
 	        }
 	    }
 	});
-
+	*/
 	fileInput.addEventListener('change', function(e) 
 	{
 		var file = fileInput.files[0];
@@ -183,9 +184,66 @@ function convertData(transactions)
 			}
 		}
 	}
+	else if (lineOptions.options[lineOptions.selectedIndex].text == "Commons")
+	{
+		for(var i = 0; i < transactions.length; i++)
+		{
+			if(transactions[i].group == "Dining Commons")
+			{
+				//Check for multiple transactions in a day
+				var utcDate = getUTC(transactions[i].date)
+				if(days.indexOf(utcDate) == -1)
+				{	
+					days.push(utcDate);
+					parsedData.push([utcDate, transactions[i].cost]);
+					//console.log("adding: " + utcDate + "," + transactions[i].cost);
+				}
+				else
+				{
+					//console.log("else: " + transactions[i].cost);
+					for(var j = 0; j < parsedData.length; j++)
+					{
+						if(parsedData[j][0] == utcDate)
+						{
+							parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+						}
+					}
+				}
+			}
+		}
+	}
+	else if (lineOptions.options[lineOptions.selectedIndex].text == "Vending Machines")
+	{
+		for(var i = 0; i < transactions.length; i++)
+		{
+			if(transactions[i].group == "Vending")
+			{
+				//Check for multiple transactions in a day
+				var utcDate = getUTC(transactions[i].date)
+				if(days.indexOf(utcDate) == -1)
+				{	
+					days.push(utcDate);
+					parsedData.push([utcDate, transactions[i].cost]);
+					//console.log("adding: " + utcDate + "," + transactions[i].cost);
+				}
+				else
+				{
+					//console.log("else: " + transactions[i].cost);
+					for(var j = 0; j < parsedData.length; j++)
+					{
+						if(parsedData[j][0] == utcDate)
+						{
+							parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+						}
+					}
+				}
+			}
+		}
+	}
 	else
 	{
 		console.log("You in trouble");
+		console.log(lineOptions.options[lineOptions.selectedIndex].text);
 	}
 	return parsedData;
 }
