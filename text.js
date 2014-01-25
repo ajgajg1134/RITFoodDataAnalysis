@@ -1,5 +1,12 @@
 var fileLoaded = 0;
 var transactions = new Array();
+
+var startUTC = 1390089600000;
+var endUTC = 1400803200000;
+
+//var startUTC = 1376265600000;
+//var endUTC = 1387411200000;
+
 window.onload = function(e){
 
 	if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -59,11 +66,11 @@ window.onload = function(e){
 				total += parseFloat(extraSplit[1]);
 				if(!(extraSplit[3] == "Online Deposits"))
 				{
-					transactions.push(new transaction(splittedLines[i]));
+					transactions.push(new Transaction(splittedLines[i]));
 				}
 			}
-			console.log("Total : " + total);
-			console.log("Average: " + total / splittedLines.length);
+			//console.log("Total : " + total);
+			//console.log("Average: " + total / splittedLines.length);
 
 			//console.log(splittedLines[splittedLines.length]);
 			fileDisplayArea.innerText = "Total Spent: $" + total.toFixed(2) + "\n" + "Average Spent per Trip: $" + (total / splittedLines.length).toFixed(2);
@@ -72,6 +79,7 @@ window.onload = function(e){
 			makeSpendGraph(transactions);
 			makeDayPieGraph(transactions);
 			makeLocPieGraph(transactions);
+			makeBestFitGraph(transactions);
 			fileLoaded = 1;
 		}
 		reader.readAsText(file);
@@ -85,7 +93,7 @@ function lineChange()
 		makeSpendGraph(transactions);
 	}
 }
-function transaction(line)
+function Transaction(line)
 {
 	var splitLine = line.split(",");
 	this.date = splitLine[0];
@@ -93,6 +101,86 @@ function transaction(line)
 	this.totalLeft = parseFloat(splitLine[2]);
 	this.loc = splitLine[3];
 	this.group = splitLine[4];
+}
+function getTotalLeftData()
+{
+	var days = new Array();
+	var parsedData = new Array();
+	var lineOptions=document.getElementById("lineOptions");
+
+	for(var i = 0; i < transactions.length; i++)
+	{
+		//Check for multiple transactions in a day
+		var utcDate = getUTC(transactions[i].date)
+		if(utcDate > startUTC && utcDate < endUTC)
+		{
+			if(days.indexOf(utcDate) == -1)
+			{	
+				days.push(utcDate);
+				parsedData.push([utcDate, transactions[i].totalLeft]);
+				//console.log("adding: " + utcDate + "," + transactions[i].cost);
+			}
+			else
+			{
+				//console.log("else: " + transactions[i].cost);
+				for(var j = 0; j < parsedData.length; j++)
+				{
+					if(parsedData[j][0] == utcDate)
+					{
+						parsedData[j][1] = transactions[i].totalLeft;
+					}
+				}
+			}
+		}
+	}
+	return parsedData;
+}
+//Takes transactions and finds line of best fit regarding total money
+function findLineBestFit(transactionsWork)
+{
+	var days = new Array();
+	var parsedData = new Array();
+	var lineOptions=document.getElementById("lineOptions");
+	var n = 0;
+	var sumX = 0;
+	var sumY = 0;
+	var sumXsquare = 0;
+	var sumProduct = 0;
+	for(var i = 0; i < transactionsWork.length; i++)
+	{
+		var utc = getUTC(transactionsWork[i].date);
+		//Check if data is before start of semester
+		if(utc > startUTC && utc < endUTC)
+		{
+			sumX += utc
+			sumY += transactionsWork[i].totalLeft;
+			sumProduct += utc * transactionsWork[i].totalLeft;
+			sumXsquare += Math.pow(utc, 2);
+			n++;
+		}	
+	}
+	//console.log("sumx: " + sumX);
+	//console.log("sumy: " + sumY);
+	var slope = ((n*sumProduct) - (sumX * sumY)) / ((n*sumXsquare) - Math.pow(sumX, 2));
+	var intercept = (sumY - (slope * sumX)) / n;
+
+	//Formula for line is y = intercept + slope ( x )
+	//Or: total left = intercepty + slope ( date in UTC )
+
+	//Start date for semester: 1390089600000 (1/19/2014)
+	//End date for semester: 1400803200000 (05/23/2014)
+
+	var estimateEndAmount = intercept + (slope * endUTC);
+
+	//console.log(estimateEndAmount);
+
+	parsedData.push([startUTC, intercept + (slope * startUTC)]);
+	parsedData.push([endUTC, intercept + (slope * endUTC)]);
+
+	return parsedData;
+
+	//console.log("Slope: " + slope);
+	//console.log("Intercept: " + intercept);
 }
 //Takes all transactions and returns the array of days and amount spent that day
 //in form [[UTCDATE, AMOUNTSPENT],...]
@@ -306,6 +394,46 @@ function makeSpendGraph(transactions)
             // of 1970/71 in order to be compared on the same x axis. Note
             // that in JavaScript, months start at 0 for January, 1 for February etc.
             data: newData
+        }]
+    });
+}
+//Uses highcharts.js to create and display line of best fit
+//Shows total amount of money only in current semester
+function makeBestFitGraph(transactions)
+{
+	var newData = getTotalLeftData();
+	var bestFitData = findLineBestFit(transactions);
+    $('#bestFit').highcharts({
+       
+        title: {
+            text: 'Total Left This Semester'
+        },
+        xAxis: {
+            type: 'datetime',
+            dateTimeLabelFormats: { // don't display the dummy year
+                month: '%e. %b',
+                year: '%b'
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Dollars Left ($)'
+            },
+            min: 0
+        },
+        tooltip: {
+        	pointFormat: '{series.name}: <b>${point.y:.2f}</b><br/>'
+        },
+        
+        series: [{
+            name: 'Debit Purchases',
+            // Define the data points. All series have a dummy year
+            // of 1970/71 in order to be compared on the same x axis. Note
+            // that in JavaScript, months start at 0 for January, 1 for February etc.
+            data: newData
+        },{
+        	name: 'Best Fit',
+        	data: bestFitData
         }]
     });
 }
