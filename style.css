@@ -27,3 +27,11 @@ img {
   width: 100%;
   overflow-x: auto;
 }
+
+.chart{
+  width:50%;
+  float:left;
+}
+.clearfix{
+  clear:both;
+}
