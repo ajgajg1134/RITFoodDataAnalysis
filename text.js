@@ -12,8 +12,7 @@ window.onload = function(e){
 	if (window.File && window.FileReader && window.FileList && window.Blob) {
 	  // Great success! All the File APIs are supported.
 	} else {
-	  alert('The File APIs are not fully supported in this browser.\n
-	  		Please upgrade your browser to Chrome, Firefox, or Safari');
+	  alert("The File APIs are not fully supported in this browser.\nPlease upgrade your browser to Chrome, Firefox, or Safari");
 	}
 
 	var fileInput = document.getElementById('fileInput');
