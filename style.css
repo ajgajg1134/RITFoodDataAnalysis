@@ -35,4 +35,10 @@ img {
 .clearfix{
   clear:both;
 }
-#alert { visibility: hidden; }
+#alert { 
+  visibility: hidden; 
+  float:left;
+}
+#info {
+  float: left;
+}
