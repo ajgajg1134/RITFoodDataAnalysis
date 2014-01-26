@@ -12,38 +12,13 @@ window.onload = function(e){
 	if (window.File && window.FileReader && window.FileList && window.Blob) {
 	  // Great success! All the File APIs are supported.
 	} else {
-	  alert('The File APIs are not fully supported in this browser.');
+	  alert('The File APIs are not fully supported in this browser.\n
+	  		Please upgrade your browser to Chrome, Firefox, or Safari');
 	}
 
 	var fileInput = document.getElementById('fileInput');
 	var fileDisplayArea = document.getElementById('fileDisplayArea');
-	/*
-	$.support.cors = true;
-	$.ajax({
-	    type: "GET",
-	    url: "https://sis.rit.edu/portalServices/exportfoodtranscsv.do?sdate=10012013&edate=01222014",
-	    headers: {"Origin":"sis.rit.edu"},
-	    //dataType: "json",
-	    success: function(data, textStatus) {
-	    	console.log(data);
-	        if (data.redirect) {
-	            // data.redirect contains the string URL to redirect to
-	            $.ajax({
-				    type: "GET",
-				    url: data.redirect,
-				    data: reqBody,
-				    dataType: "text",
-				    success: function(data, textStatus) {
-				        console.log(data);
-				    }
-				});
-	        }
-	        else {
-	            console.log("NOT REDIRECT");
-	        }
-	    }
-	});
-	*/
+
 	fileInput.addEventListener('change', function(e) 
 	{
 		var file = fileInput.files[0];
