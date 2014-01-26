@@ -14,17 +14,26 @@
 	<div id="page-wrapper">
 		<h1>RIT Food Data Analyzer</h1>
 		<div>
-			Upload your .csv food data file: <input type="file" id="fileInput"><br /> 
-			(You can just drag the file from your download bar if you use Chrome!)<br />
-			To download your file <a href="download.html" target="_blank">click here</a><br />
-			Line Graph Options: 
-			<select id="lineOptions" onchange="lineChange()">
-				<option value="all" > All </option>
-		   	    <option value="corner">Corner Store</option>
-		   	    <option value="nathans">Nathan's</option>
-		    	<option value="commons">Commons</option>
-		    	<option value="vending">Vending Machines</option>
-			</select>
+			<div id="info">
+				Upload your .csv food data file: <input type="file" id="fileInput"><br /> 
+				(You can just drag the file from your download bar if you use Chrome!)<br />
+				To download your file <a href="download.html" target="_blank">click here</a><br />
+				Line Graph Options: 
+				<select id="lineOptions" onchange="lineChange()">
+					<option value="all" > All </option>
+			   	    <option value="corner">Corner Store</option>
+			   	    <option value="nathans">Nathan's</option>
+			    	<option value="commons">Commons</option>
+			    	<option value="vending">Vending Machines</option>
+				</select>
+			</div>
+			<div id="alert">
+				<h3>
+					Sorry it seems your browser doesn't support the cool new web-technologies required for this page <br />
+					Try downloading <a href="https://www.google.com/intl/en/chrome/browser/?hl=en&brand=CHMA&utm_campaign=en&utm_source=en-ha-na-us-bk&utm_medium=ha">Chrome</a>,
+					or <a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a>.
+				</h3>
+			</div>
 		</div>
 		<div id="container" style="width:100%; height:400px;">
 		</div>
