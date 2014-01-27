@@ -166,14 +166,15 @@ function findLineBestFit(transactionsWork)
 }
 //Takes all transactions and returns the array of days and amount spent that day
 //in form [[UTCDATE, AMOUNTSPENT],...]
-function convertData(transactions)
+function convertData()
 {
 	//console.log("Called");
 	var days = new Array();
 	var parsedData = new Array();
 	var lineOptions=document.getElementById("lineOptions");
+	var lineValue = lineOptions.options[lineOptions.selectedIndex].value;
 
-	if(lineOptions.options[lineOptions.selectedIndex].text == "All")
+	if(lineValue == "All")
 	{
 		for(var i = 0; i < transactions.length; i++)
 		{
@@ -198,11 +199,11 @@ function convertData(transactions)
 			}
 		}
 	}
-	else if(lineOptions.options[lineOptions.selectedIndex].text == "Corner Store")
+	else
 	{
 		for(var i = 0; i < transactions.length; i++)
 		{
-			if(transactions[i].group == "Corner Store")
+			if(transactions[i].group == lineValue)
 			{
 				//Check for multiple transactions in a day
 				var utcDate = getUTC(transactions[i].date)
@@ -226,6 +227,7 @@ function convertData(transactions)
 			}
 		}
 	}
+	/*
 	else if (lineOptions.options[lineOptions.selectedIndex].text == "Nathan's")
 	{
 		for(var i = 0; i < transactions.length; i++)
@@ -315,6 +317,7 @@ function convertData(transactions)
 		console.log("You in trouble");
 		console.log(lineOptions.options[lineOptions.selectedIndex].text);
 	}
+	*/
 	return parsedData;
 }
 //Takes raw date and returns string of day of week
