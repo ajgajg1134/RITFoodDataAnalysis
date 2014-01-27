@@ -48,7 +48,9 @@ window.onload = function(e){
 			//console.log("Average: " + total / splittedLines.length);
 
 			//console.log(splittedLines[splittedLines.length]);
-			fileDisplayArea.innerText = "Total Spent: $" + total.toFixed(2) + "\n" + "Average Spent per Trip: $" + (total / splittedLines.length).toFixed(2);
+			fileDisplayArea.innerText = "Total Spent: $" + total.toFixed(2) + 
+										"\n" + "Average Spent per Trip: $" + (total / splittedLines.length).toFixed(2) + "\n" +
+										"Total Remaining: $" + getFinalAmount();
 
 			//Create chart
 			makeSpendGraph(transactions);
@@ -59,6 +61,11 @@ window.onload = function(e){
 		}
 		reader.readAsText(file);
 	});
+}
+//Gets last entry and returns amount of money user has left
+function getFinalAmount()
+{
+	return transactions[transactions.length - 1].totalLeft;
 }
 //Updates line graph should user change drop down menu
 function lineChange()
