@@ -67,7 +67,7 @@ window.onload = function(e){
 function getSpendPerDayEnd()
 {
 	var currDate = new Date().getTime();
-	console.log("Current date: " + currDate);
+	//console.log("Current date: " + currDate);
 
 	var difference = endUTC - currDate;
 
