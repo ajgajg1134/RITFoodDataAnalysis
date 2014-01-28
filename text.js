@@ -50,7 +50,8 @@ window.onload = function(e){
 			//console.log(splittedLines[splittedLines.length]);
 			fileDisplayArea.innerText = "Total Spent: $" + total.toFixed(2) + 
 										"\n" + "Average Spent per Trip: $" + (total / splittedLines.length).toFixed(2) + "\n" +
-										"Total Remaining: $" + getFinalAmount();
+										"Total Remaining: $" + getFinalAmount() + "\n" +
+										"Amount you can spend per day: $" + getSpendPerDayEnd().toFixed(2);
 
 			//Create chart
 			makeSpendGraph(transactions);
@@ -61,6 +62,24 @@ window.onload = function(e){
 		}
 		reader.readAsText(file);
 	});
+}
+//Gets amount user can spend per day to end with $0
+function getSpendPerDayEnd()
+{
+	var currDate = new Date().getTime();
+	console.log("Current date: " + currDate);
+
+	var difference = endUTC - currDate;
+
+	//Difference is the number of milliseconds between current date and end date of semester
+	difference = difference / 1000;
+	//Now is seconds
+	difference = difference / 3600;
+	//Now is hours
+	difference = difference / 24;
+	//Now is number of days
+
+	return getFinalAmount() / difference;
 }
 //Gets last entry and returns amount of money user has left
 function getFinalAmount()
