@@ -15,20 +15,27 @@
 	<div id="page-wrapper">
 		<h1>RIT Food Data Analyzer</h1>
 		<div>
-			<div id="info">
+			<div id="info" style="width:100%;">
 				<div id="start">
-					Upload your .csv food data file: <input type="file" id="fileInput"><br /> 
-					(You can just drag the file from your download bar if you use Chrome!)<br />
-					To download your file <a href="download.html" target="_blank">click here</a><br />
+					<div style="width:200px;float:left;">
+						<a href="download.html" target="_blank"><div id="download"></div></a>
+					</div>
+					<div style="width:150px;float:left;">
+						<a href="#" onclick="performClick(document.getElementById('fileInput'));"><div id="upload"></div></a>
+						<input type="file" src="upload.png" id="fileInput" hidden style="width:0px; height:0px;">
+					</div>
 				</div>
-				Line Graph Options: 
-				<select id="lineOptions" onchange="lineChange()">
-					<option value="All" > All </option>
-			   	    <option value="Corner Store">Corner Store</option>
-			   	    <option value="Nathan's Soup">Nathan's</option>
-			    	<option value="Dining Commons">Commons</option>
-			    	<option value="Vending">Vending Machines</option>
-				</select>
+				<br class="clearfix"/>
+				<div style="padding:5px;">
+					Line Graph Options: 
+					<select id="lineOptions" onchange="lineChange()">
+						<option value="All" > All </option>
+				   	    <option value="Corner Store">Corner Store</option>
+				   	    <option value="Nathan's Soup">Nathan's</option>
+				    	<option value="Dining Commons">Commons</option>
+				    	<option value="Vending">Vending Machines</option>
+					</select>
+				</div>
 			</div>
 			<div id="alert">
 				<h3>

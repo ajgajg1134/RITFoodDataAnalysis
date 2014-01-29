@@ -62,6 +62,8 @@ window.onload = function(e){
 			fileLoaded = 1;
 			$("#start").css("visibility", "hidden");
 			$("#start").css("height", "0px");
+			$("#download").css("height", "0px");
+			$("#upload").css("height", "0px");
 		}
 		reader.readAsText(file);
 	});
@@ -414,6 +416,12 @@ function spendByLoc(transactions)
 		}
 	}
 	return parsedData;
+}
+//Performs upload event
+function performClick(node) {
+   var evt = document.createEvent("MouseEvents");
+   evt.initEvent("click", true, false);
+   node.dispatchEvent(evt);
 }
 //Creates a pie graph charting spending by each day of week
 function makeDayPieGraph(transactions)

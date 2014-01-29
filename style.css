@@ -28,12 +28,20 @@ img {
   overflow-x: auto;
 }
 
+#start{
+  padding-bottom: 5px;
+}
+
 .chart{
   width:50%;
   float:left;
 }
 .clearfix{
   clear:both;
+}
+.buttons{
+  width:50%;
+  float:left;
 }
 #alert { 
   visibility: hidden; 
@@ -47,4 +55,20 @@ img {
   margin-left:auto;
   margin-right:auto;
   width:20%;
+}
+#upload {
+  background-image: url('upload_brown.png');
+  width: 111px;
+  height: 39px;
+}
+#upload:hover {
+  background-image: url('upload.png');
+}
+#download {
+  background-image: url('download_brown.png');
+  width: 187px;
+  height: 39px;
+}
+#download:hover {
+  background-image: url('download.png');
 }
