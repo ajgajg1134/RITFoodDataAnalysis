@@ -59,6 +59,8 @@ window.onload = function(e){
 			makeLocPieGraph(transactions);
 			makeBestFitGraph(transactions);
 			fileLoaded = 1;
+			$("#start").css("visibility", "hidden");
+			$("#start").css("height", "0px");
 		}
 		reader.readAsText(file);
 	});
