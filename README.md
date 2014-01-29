@@ -8,3 +8,5 @@ To obtain your .csv file for food transactions click "click here" where designat
 You can view your spending by day and specific location using the drop down menu
 
 To view a live version of this site go to http://csh.rit.edu/~ajgajg1134/text 
+
+License: http://opensource.org/licenses/MIT

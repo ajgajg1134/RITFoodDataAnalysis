@@ -64,9 +64,14 @@ window.onload = function(e){
 			$("#start").css("height", "0px");
 			$("#download").css("height", "0px");
 			$("#upload").css("height", "0px");
+
 		}
 		reader.readAsText(file);
 	});
+}
+function activateDoge()
+{
+	$($.doge);
 }
 //Gets amount user can spend per day to end with $0
 function getSpendPerDayEnd()
