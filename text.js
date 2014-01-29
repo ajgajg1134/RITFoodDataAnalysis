@@ -13,6 +13,7 @@ window.onload = function(e){
 	  // Great success! All the File APIs are supported.
 	} else {
 	  $("#alert").css("visibility", "visible");
+	  $("#alert").css("height", "auto");
 	  $("#info").css("visibility", "hidden");
 	}
 

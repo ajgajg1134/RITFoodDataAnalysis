@@ -38,6 +38,7 @@ img {
 #alert { 
   visibility: hidden; 
   float:left;
+  height:0px;
 }
 #info {
   float: left;
