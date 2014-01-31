@@ -60,6 +60,7 @@ window.onload = function(e){
 			makeLocPieGraph(transactions);
 			makeBestFitGraph(transactions);
 			fileLoaded = 1;
+			//Here the download and upload buttons are squashed from the screen
 			$("#start").css("visibility", "hidden");
 			$("#start").css("height", "0px");
 			$("#download").css("height", "0px");
