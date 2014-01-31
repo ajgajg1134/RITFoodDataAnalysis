@@ -1,4 +1,4 @@
-var fileLoaded = 0;
+var fileLoaded = 0; //Boolean has file loaded
 var transactions = new Array();
 
 var startUTC = 1390089600000;
@@ -50,7 +50,7 @@ window.onload = function(e){
 
 			//console.log(splittedLines[splittedLines.length]);
 			fileDisplayArea.innerText = "Total Spent: $" + total.toFixed(2) + 
-										"\n" + "Average Spent per Trip: $" + (total / splittedLines.length).toFixed(2) + "\n" +
+										"\n" + "Average Spent per Day: $" + getAvgPerDay().toFixed(2) + "\n" +
 										"Total Remaining: $" + getFinalAmount() + "\n" +
 										"Amount you can spend per day: $" + getSpendPerDayEnd().toFixed(2);
 
@@ -69,6 +69,45 @@ window.onload = function(e){
 		reader.readAsText(file);
 	});
 }
+//Calculates and returns the amount the user has spent per day (NOT transaction)
+function getAvgPerDay()
+{
+	var days = new Array();
+	var parsedData = new Array();
+	var lineOptions=document.getElementById("lineOptions");
+	var lineValue = lineOptions.options[lineOptions.selectedIndex].value;
+
+	for(var i = 0; i < transactions.length; i++)
+	{
+		//Check for multiple transactions in a day
+		var utcDate = getUTC(transactions[i].date)
+		if(days.indexOf(utcDate) == -1)
+		{	
+			days.push(utcDate);
+			parsedData.push([utcDate, transactions[i].cost]);
+			//console.log("adding: " + utcDate + "," + transactions[i].cost);
+		}
+		else
+		{
+			//console.log("else: " + transactions[i].cost);
+			for(var j = 0; j < parsedData.length; j++)
+			{
+				if(parsedData[j][0] == utcDate)
+				{
+					parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+				}
+			}
+		}
+	}
+	var sum = 0;
+	for (var i = 0; i < parsedData.length; i++)
+	{
+		sum += parsedData[i][1];
+	}
+	return sum / parsedData.length;
+}
+//Activates JQuery doge plugin
+//Causes doge-isms to appear on screen
 function activateDoge()
 {
 	$($.doge);
