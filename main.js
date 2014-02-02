@@ -348,7 +348,11 @@ function makeSpendGraph(transactions)
             min: 0
         },
         tooltip: {
-        	pointFormat: '{series.name}: <b>${point.y:.2f}</b><br/>'
+        	formatter: function() {
+                        return '<b>'+ Highcharts.dateFormat('%b. %e', this.x) +'</b><br/>'
+                         +'$'+ this.y.toFixed(2);
+                }
+
         },
         
         series: [{
