@@ -349,7 +349,7 @@ function makeSpendGraph(transactions)
         },
         tooltip: {
         	formatter: function() {
-                        return '<b>'+ Highcharts.dateFormat('%b. %e', this.x) +'</b><br/>'
+                        return '<b>'+ Highcharts.dateFormat('%A %b. %e', this.x) +'</b><br/>'
                          +'$'+ this.y.toFixed(2);
                 }
 
