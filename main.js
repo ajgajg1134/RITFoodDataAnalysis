@@ -49,7 +49,7 @@ window.onload = function(e){
 			//console.log("Average: " + total / splittedLines.length);
 
 			//console.log(splittedLines[splittedLines.length]);
-			fileDisplayArea.innerText = "Total Spent: $" + total.toFixed(2) + 
+			fileDisplayArea.textContent = "Total Spent: $" + total.toFixed(2) + 
 										"\n" + "Average Spent per Day: $" + getAvgPerDay().toFixed(2) + "\n" +
 										"Total Remaining: $" + getFinalAmount() + "\n" +
 										"Amount you can spend per day: $" + getSpendPerDayEnd().toFixed(2);
