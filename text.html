@@ -33,8 +33,15 @@
 						<input type="file" src="upload.png" id="fileInput" hidden style="width:0px; height:0px;">
 					</div>
 				</div>
+                
+                <div id="DateRangeSelector" style="visibility:hidden;">
+                    Start date: <input type="date" name="sDate" id="sDate" value="2013-07-15">
+                    End date: <input type="date" name="eDate" id="eDate" value="2014-05-28">
+                    <input type="submit" onclick="calcDates()">
+                </div>
+                
 				<br class="clearfix"/>
-				<div style="padding:5px;">
+				<div style="visibility:hidden;" id="LineGraphOptions">
 					Line Graph Options: 
 					<select id="lineOptions" onchange="lineChange()">
 						<option value="All" > All </option>
