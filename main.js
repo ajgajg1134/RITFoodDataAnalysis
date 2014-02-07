@@ -1,5 +1,7 @@
 var fileLoaded = 0; //Boolean has file loaded
 var transactions = new Array();
+var file; //The csv file inputted
+var reader = new FileReader();
 
 var startUTC = 1390089600000;
 var endUTC = 1400803200000;
@@ -17,59 +19,89 @@ window.onload = function(e){
 	  $("#info").css("visibility", "hidden");
 	}
 
+	
+	var uploadBtn = document.getElementById('upload');
 	var fileInput = document.getElementById('fileInput');
-	var fileDisplayArea = document.getElementById('fileDisplayArea');
+	$("#uploadSpecial").css("background-color", "#000000");
+
+	function cancel(e) {
+      if (e.preventDefault) { e.preventDefault(); }
+      return false;
+    }
+
+	addEventHandler(uploadBtn, 'dragover', cancel);
+    addEventHandler(uploadBtn, 'dragenter', cancel);
+
+	uploadBtn.addEventListener('drop', dropEvent, false);
 
 	fileInput.addEventListener('change', function(e) 
 	{
-		var file = fileInput.files[0];
-		var reader = new FileReader();
-
-		reader.onload = function(e) 
-		{
-			//fileDisplayArea.innerText = reader.result;
-			var string = reader.result;
-			//console.log(string);
-			//console.log("---");
-			var splittedLines = string.split("\n");
-			splittedLines.splice(0,1);	//Removes description line
-			splittedLines.splice(splittedLines.length - 1, 1);
-			var total = 0;
-
-			for(var i = 0; i < splittedLines.length; i++)
-			{
-				var extraSplit = splittedLines[i].split(",");
-				total += parseFloat(extraSplit[1]);
-				if(!(extraSplit[3] == "Online Deposits"))
-				{
-					transactions.push(new Transaction(splittedLines[i]));
-				}
-			}
-			//console.log("Total : " + total);
-			//console.log("Average: " + total / splittedLines.length);
-
-			//console.log(splittedLines[splittedLines.length]);
-			fileDisplayArea.textContent = "Total Spent: $" + total.toFixed(2) + 
-										"\n" + "Average Spent per Day: $" + getAvgPerDay().toFixed(2) + "\n" +
-										"Total Remaining: $" + getFinalAmount() + "\n" +
-										"Amount you can spend per day: $" + getSpendPerDayEnd().toFixed(2);
-
-			//Create chart
-			makeSpendGraph(transactions);
-			makeDayPieGraph(transactions);
-			makeLocPieGraph(transactions);
-			makeBestFitGraph(transactions);
-			fileLoaded = 1;
-			//Here the download and upload buttons are squashed from the screen
-			$("#start").css("visibility", "hidden");
-			$("#start").css("height", "0px");
-			$("#download").css("height", "0px");
-			$("#upload").css("height", "0px");
-			$("#LineGraphOptions").css( "visibility", "visible" );
-
-		}
+		file = fileInput.files[0];
 		reader.readAsText(file);
 	});
+	var fileDisplayArea = document.getElementById('fileDisplayArea');
+	reader.onload = function(e) 
+	{
+		//fileDisplayArea.innerText = reader.result;
+		var string = reader.result;
+		//console.log(string);
+		//console.log("---");
+		var splittedLines = string.split("\n");
+		splittedLines.splice(0,1);	//Removes description line
+		splittedLines.splice(splittedLines.length - 1, 1);
+		var total = 0;
+
+		for(var i = 0; i < splittedLines.length; i++)
+		{
+			var extraSplit = splittedLines[i].split(",");
+			total += parseFloat(extraSplit[1]);
+			if(!(extraSplit[3] == "Online Deposits"))
+			{
+				transactions.push(new Transaction(splittedLines[i]));
+			}
+		}
+		//console.log("Total : " + total);
+		//console.log("Average: " + total / splittedLines.length);
+
+		//console.log(splittedLines[splittedLines.length]);
+		fileDisplayArea.textContent = "Total Spent: $" + total.toFixed(2) + 
+									"\n" + "Average Spent per Day: $" + getAvgPerDay().toFixed(2) + "\n" +
+									"Total Remaining: $" + getFinalAmount() + "\n" +
+									"Amount you can spend per day: $" + getSpendPerDayEnd().toFixed(2);
+
+		//Create chart
+		makeSpendGraph(transactions);
+		makeDayPieGraph(transactions);
+		makeLocPieGraph(transactions);
+		makeBestFitGraph(transactions);
+		fileLoaded = 1;
+		//Here the download and upload buttons are squashed from the screen
+		$("#start").css("visibility", "hidden");
+		$("#start").css("height", "0px");
+		$("#download").css("height", "0px");
+		$("#upload").css("height", "0px");
+		$("#LineGraphOptions").css( "visibility", "visible" );
+	}
+}
+function addEventHandler(obj, evt, handler) {
+    if(obj.addEventListener) {
+        // W3C method
+        obj.addEventListener(evt, handler, false);
+    } else if(obj.attachEvent) {
+        // IE method.
+        obj.attachEvent('on'+evt, handler);
+    } else {
+        // Old school method.
+        obj['on'+evt] = handler;
+    }
+}
+function dropEvent(e)
+{
+	e.stopPropagation();
+    e.preventDefault();
+
+	console.log("Dropping!\n");
+	reader.readAsText(e.dataTransfer.files[0]);
 }
 //Calculates and returns the amount the user has spent per day (NOT transaction)
 function getAvgPerDay()
