@@ -1,5 +1,7 @@
 var fileLoaded = 0; //Boolean has file loaded
 var transactions = new Array();
+var rangedTransactions = new Array();
+var fileDisplayArea;
 
 var startUTC = 1390089600000;
 var endUTC = 1400803200000;
@@ -18,7 +20,7 @@ window.onload = function(e){
 	}
 
 	var fileInput = document.getElementById('fileInput');
-	var fileDisplayArea = document.getElementById('fileDisplayArea');
+	fileDisplayArea = document.getElementById('fileDisplayArea');
 
 	fileInput.addEventListener('change', function(e) 
 	{
@@ -47,45 +49,74 @@ window.onload = function(e){
 			}
 			//console.log("Total : " + total);
 			//console.log("Average: " + total / splittedLines.length);
-
-			//console.log(splittedLines[splittedLines.length]);
-			fileDisplayArea.textContent = "Total Spent: $" + total.toFixed(2) + 
-										"\n" + "Average Spent per Day: $" + getAvgPerDay().toFixed(2) + "\n" +
-										"Total Remaining: $" + getFinalAmount() + "\n" +
-										"Amount you can spend per day: $" + getSpendPerDayEnd().toFixed(2);
-
-			//Create chart
-			makeSpendGraph(transactions);
-			makeDayPieGraph(transactions);
-			makeLocPieGraph(transactions);
-			makeBestFitGraph(transactions);
+            rangedTransactions = transactions;
+			calculate( rangedTransactions );
+            
 			fileLoaded = 1;
 			//Here the download and upload buttons are squashed from the screen
 			$("#start").css("visibility", "hidden");
 			$("#start").css("height", "0px");
 			$("#download").css("height", "0px");
 			$("#upload").css("height", "0px");
+            
+            //show the Line Graph Options and Date Range Selector
+            $("#LineGraphOptions").css( "visibility", "visible" );
+            $("#DateRangeSelector").scc( "visibility", "visible" );
 
 		}
 		reader.readAsText(file);
 	});
 }
+
+//limit transactions to the transactions within the specified date period
+function limitTransactionsByDate( startDate, endDate, allTransactions ) {
+    rangedTransactions.clear();
+    for( var i = 0; i < allTransactions.length; i++ ) {
+        var utcDate = getUTC( allTransactions[i].date );
+        if( startDate > utcDate && utcDate < endDate ) {
+            rangedTransactions.push( allTransactions[i] ).date;
+        }
+    }
+}
+
+function calcDates() {
+    var sDate = document.getElementById( "sDate" ).value;
+    var eDate = document.getElementById( "eDate" ).value;
+    limitTransactionsByDate( sDate, eDate, transactions );
+    calculate( 
+}
+
+//Calculates useful value
+function calculate( myTransactions ) {
+    //console.log(splittedLines[splittedLines.length]);
+    fileDisplayArea.textContent = "Total Spent: $" + total.toFixed(2) + 
+							"\n" + "Average Spent per Day: $" + getAvgPerDay( myTransactions ).toFixed(2) + "\n" +
+							"Total Remaining: $" + getFinalAmount( myTransactions ) + "\n" +
+							"Amount you can spend per day: $" + getSpendPerDayEnd( myTransactions ).toFixed(2);
+
+			//Create chart
+			makeSpendGraph(myTransactions);
+			makeDayPieGraph(myTransactions);
+			makeLocPieGraph(myTransactions);
+			makeBestFitGraph(myTransactions);
+}
+
 //Calculates and returns the amount the user has spent per day (NOT transaction)
-function getAvgPerDay()
+function getAvgPerDay( myTransactions )
 {
 	var days = new Array();
 	var parsedData = new Array();
 	var lineOptions=document.getElementById("lineOptions");
 	var lineValue = lineOptions.options[lineOptions.selectedIndex].value;
 
-	for(var i = 0; i < transactions.length; i++)
+	for(var i = 0; i < myTransactions.length; i++)
 	{
 		//Check for multiple transactions in a day
-		var utcDate = getUTC(transactions[i].date)
+		var utcDate = getUTC(myTransactions[i].date)
 		if(days.indexOf(utcDate) == -1)
 		{	
 			days.push(utcDate);
-			parsedData.push([utcDate, transactions[i].cost]);
+			parsedData.push([utcDate, myTransactions[i].cost]);
 			//console.log("adding: " + utcDate + "," + transactions[i].cost);
 		}
 		else
@@ -95,7 +126,7 @@ function getAvgPerDay()
 			{
 				if(parsedData[j][0] == utcDate)
 				{
-					parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+					parsedData[j][1] = myTransactions[i].cost + parsedData[j][1];
 				}
 			}
 		}
@@ -114,7 +145,7 @@ function activateDoge()
 	$($.doge);
 }
 //Gets amount user can spend per day to end with $0
-function getSpendPerDayEnd()
+function getSpendPerDayEnd( myTransactions )
 {
 	var currDate = new Date().getTime();
 	//console.log("Current date: " + currDate);
@@ -129,12 +160,12 @@ function getSpendPerDayEnd()
 	difference = difference / 24;
 	//Now is number of days
 
-	return getFinalAmount() / difference;
+	return getFinalAmount( myTransactions ) / difference;
 }
 //Gets last entry and returns amount of money user has left
-function getFinalAmount()
+function getFinalAmount( myTransactions )
 {
-	return transactions[transactions.length - 1].totalLeft;
+	return myTransactions[myTransactions.length - 1].totalLeft;
 }
 //Updates line graph should user change drop down menu
 function lineChange()
@@ -245,14 +276,14 @@ function convertData()
 
 	if(lineValue == "All")
 	{
-		for(var i = 0; i < transactions.length; i++)
+		for(var i = 0; i < myTransactions.length; i++)
 		{
 			//Check for multiple transactions in a day
-			var utcDate = getUTC(transactions[i].date)
+			var utcDate = getUTC(myTransactions[i].date)
 			if(days.indexOf(utcDate) == -1)
 			{	
 				days.push(utcDate);
-				parsedData.push([utcDate, transactions[i].cost]);
+				parsedData.push([utcDate, myTransactions[i].cost]);
 				//console.log("adding: " + utcDate + "," + transactions[i].cost);
 			}
 			else
@@ -262,7 +293,7 @@ function convertData()
 				{
 					if(parsedData[j][0] == utcDate)
 					{
-						parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+						parsedData[j][1] = myTransactions[i].cost + parsedData[j][1];
 					}
 				}
 			}
@@ -270,16 +301,16 @@ function convertData()
 	}
 	else
 	{
-		for(var i = 0; i < transactions.length; i++)
+		for(var i = 0; i < myTransactions.length; i++)
 		{
-			if(transactions[i].group == lineValue)
+			if(myTransactions[i].group == lineValue)
 			{
 				//Check for multiple transactions in a day
-				var utcDate = getUTC(transactions[i].date)
+				var utcDate = getUTC(myTransactions[i].date)
 				if(days.indexOf(utcDate) == -1)
 				{	
 					days.push(utcDate);
-					parsedData.push([utcDate, transactions[i].cost]);
+					parsedData.push([utcDate, myTransactions[i].cost]);
 					//console.log("adding: " + utcDate + "," + transactions[i].cost);
 				}
 				else
@@ -289,7 +320,7 @@ function convertData()
 					{
 						if(parsedData[j][0] == utcDate)
 						{
-							parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+							parsedData[j][1] = myTransactions[i].cost + parsedData[j][1];
 						}
 					}
 				}
