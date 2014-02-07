@@ -65,6 +65,7 @@ window.onload = function(e){
 			$("#start").css("height", "0px");
 			$("#download").css("height", "0px");
 			$("#upload").css("height", "0px");
+			$("#LineGraphOptions").css( "visibility", "visible" );
 
 		}
 		reader.readAsText(file);
