@@ -64,10 +64,10 @@ window.onload = function(e){
 		//console.log("Average: " + total / splittedLines.length);
 
 		//console.log(splittedLines[splittedLines.length]);
-		fileDisplayArea.textContent = "Total Spent: $" + total.toFixed(2) + 
-									"\n" + "Average Spent per Day: $" + getAvgPerDay().toFixed(2) + "\n" +
-									"Total Remaining: $" + getFinalAmount() + "\n" +
-									"Amount you can spend per day: $" + getSpendPerDayEnd().toFixed(2);
+		fileDisplayArea.textContent =  "Total Remaining: $" + getFinalAmount() + "\n"  
+									 + "Average Spent per Day: $" + getAvgPerDay().toFixed(2) + "\n" 
+									 + "Amount you can spend per day: $" + getSpendPerDayEnd().toFixed(2) + "\n" 
+									 + "Total Spent: $" + total.toFixed(2);
 
 		//Create chart
 		makeSpendGraph(transactions);
