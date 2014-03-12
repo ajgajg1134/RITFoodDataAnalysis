@@ -2,6 +2,7 @@ var fileLoaded = 0; //Boolean has file loaded
 var transactions = new Array();
 var file; //The csv file inputted
 var reader = new FileReader();
+var ERROR_CODE = 99999;
 
 var startUTC = 1390089600000;
 var endUTC = 1400803200000;
@@ -63,8 +64,10 @@ window.onload = function(e){
 		//console.log("Total : " + total);
 		//console.log("Average: " + total / splittedLines.length);
 
+		fixRollover(); //CALL THIS BEFORE ANY DATA USE
+
 		//console.log(splittedLines[splittedLines.length]);
-		fileDisplayArea.textContent =  "Total Remaining: $" + getFinalAmount() + "\n"  
+		fileDisplayArea.textContent =  "Total Remaining: $" + getFinalAmount().toFixed(2)  + "\n"  
 									 + "Average Spent per Day: $" + getAvgPerDay().toFixed(2) + "\n" 
 									 + "Amount you can spend per day: $" + getSpendPerDayEnd().toFixed(2) + "\n" 
 									 + "Total Spent: $" + total.toFixed(2);
@@ -100,7 +103,7 @@ function dropEvent(e)
 	e.stopPropagation();
     e.preventDefault();
 
-	console.log("Dropping!\n");
+	//console.log("Dropping!\n");
 	reader.readAsText(e.dataTransfer.files[0]);
 }
 //Calculates and returns the amount the user has spent per day (NOT transaction)
@@ -139,6 +142,50 @@ function getAvgPerDay()
 		sum += parsedData[i][1];
 	}
 	return sum / parsedData.length;
+}
+
+//Finds and returns the rollover amount between fall and spring semesters
+function getRollover()
+{
+	var startSearch = 1385856000000; // 12/1/2013
+	var	endSearch = 1390521600000; // 1/24/2014
+
+	var minDebit = ERROR_CODE;
+
+	for(var i = 0; i < transactions.length; i++)
+	{
+		var utcDate = getUTC(transactions[i].date);
+		if(utcDate > startSearch && utcDate < endSearch)
+		{
+			if(transactions[i].totalLeft < minDebit)
+			{
+				minDebit = transactions[i].totalLeft;
+			}
+		}
+	}
+	return minDebit;
+}
+
+//Finds the rollover using getRollover() and then alters all transactions post Jan 21
+function fixRollover()
+{
+	var rollover = getRollover();
+	if(rollover == ERROR_CODE)
+	{
+		console.log("ERROR FINDING ROLLOVER\n");
+		return;
+	}
+
+	var startChange = 1390262400000; // Jan 21, 2014
+
+	for(var i = 0; i < transactions.length; i++)
+	{
+		var utcDate = getUTC(transactions[i].date);
+		if(utcDate > startChange)
+		{
+			transactions[i].totalLeft += rollover;
+		}
+	}
 }
 //Activates JQuery doge plugin
 //Causes doge-isms to appear on screen
