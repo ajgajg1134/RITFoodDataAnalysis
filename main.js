@@ -20,11 +20,11 @@ window.onload = function(e){
 	  $("#info").css("visibility", "hidden");
 	}
 
-	
+		
 	var uploadBtn = document.getElementById('upload');
 	var fileInput = document.getElementById('fileInput');
 	$("#uploadSpecial").css("background-color", "#000000");
-
+	
 	function cancel(e) {
       if (e.preventDefault) { e.preventDefault(); }
       return false;
@@ -55,10 +55,11 @@ window.onload = function(e){
 		for(var i = 0; i < splittedLines.length; i++)
 		{
 			var extraSplit = splittedLines[i].split(",");
-			total += parseFloat(extraSplit[1]);
+			
 			if(!(extraSplit[3] == "Online Deposits"))
 			{
 				transactions.push(new Transaction(splittedLines[i]));
+				total += parseFloat(extraSplit[1]);
 			}
 		}
 		//console.log("Total : " + total);
