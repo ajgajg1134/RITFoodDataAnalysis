@@ -68,7 +68,7 @@ window.onload = function(e){
 		fixRollover(); //CALL THIS BEFORE ANY DATA USE
 
 		//console.log(splittedLines[splittedLines.length]);
-		fileDisplayArea.textContent =  "Total Remaining: $" + getFinalAmount().toFixed(2)  + "\n"  
+		fileDisplayArea.textContent =  "Total Remaining: $" + getFinalAmount().toFixed(2)  + " (WARNING: Rollover may have been incorrectly included here. For 100% accuracy please check EServices)\n"  
 									 + "Average Spent per Day: $" + getAvgPerDay().toFixed(2) + "\n" 
 									 + "Amount you can spend per day: $" + getSpendPerDayEnd().toFixed(2) + "\n" 
 									 + "Total Spent: $" + total.toFixed(2);
