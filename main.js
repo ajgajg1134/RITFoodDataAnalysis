@@ -4,8 +4,8 @@ var file; //The csv file inputted
 var reader = new FileReader();
 var ERROR_CODE = 99999;
 
-var startUTC = 1390089600000;
-var endUTC = 1400803200000;
+var startUTC = 1411084800000;
+var endUTC = 1422144000000;
 
 //var startUTC = 1376265600000;
 //var endUTC = 1387411200000;
