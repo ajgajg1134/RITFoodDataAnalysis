@@ -45,6 +45,11 @@ img {
   float:left;
   height:0px;
 }
+#empty { 
+  visibility: hidden; 
+  float:left;
+  height:0px;
+}
 #info {
   float: left;
 }

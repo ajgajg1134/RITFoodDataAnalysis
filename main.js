@@ -52,6 +52,15 @@ window.onload = function(e){
 		splittedLines.splice(splittedLines.length - 1, 1);
 		var total = 0;
 
+		if(splittedLines.length == 0)
+		{
+			$("#empty").css("visibility", "visible");
+	 	 	$("#empty").css("height", "auto");
+	 		$("#info").css("visibility", "hidden");
+	 		$("#info").css("height","0px");
+	 		return;
+		}
+
 		for(var i = 0; i < splittedLines.length; i++)
 		{
 			var extraSplit = splittedLines[i].split(",");
