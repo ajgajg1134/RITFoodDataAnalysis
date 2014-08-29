@@ -4,8 +4,9 @@ var file; //The csv file inputted
 var reader = new FileReader();
 var ERROR_CODE = 99999;
 
-var startUTC = 1410998400000;
-var endUTC = 1422144000000;
+//Note that Date.UTC month is 0 indexed
+var startUTC = Date.UTC(2014, 7, 11);
+var endUTC = Date.UTC(2015, 0, 25);
 
 //var startUTC = 1376265600000;
 //var endUTC = 1387411200000;
