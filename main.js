@@ -5,8 +5,8 @@ var reader = new FileReader();
 var ERROR_CODE = 99999;
 
 //Note that Date.UTC month is 0 indexed
-var startUTC = Date.UTC(2014, 7, 11);
-var endUTC = Date.UTC(2015, 0, 25);
+var startUTC = Date.UTC(2015, 0, 1);
+var endUTC = Date.UTC(2015, 4, 22);
 
 //var startUTC = 1376265600000;
 //var endUTC = 1387411200000;
