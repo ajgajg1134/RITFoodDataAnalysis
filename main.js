@@ -5,8 +5,12 @@ var reader = new FileReader();
 var ERROR_CODE = 99999;
 
 //Note that Date.UTC month is 0 indexed
-var startUTC = Date.UTC(2015, 0, 1);
-var endUTC = Date.UTC(2015, 4, 22);
+var startUTC = Date.UTC(2016, 0, 1);
+var endUTC = Date.UTC(2016, 4, 22);
+
+//Search dates for rollover
+var startSearch = Date.UTC(2015, 11, 1); // 12/1/2013
+var	endSearch = Date.UTC(2016, 0, 24); // 1/24/2014
 
 //var startUTC = 1376265600000;
 //var endUTC = 1387411200000;
@@ -51,7 +55,6 @@ window.onload = function(e){
 		var splittedLines = string.split("\n");
 		splittedLines.splice(0,1);	//Removes description line
 		splittedLines.splice(splittedLines.length - 1, 1);
-		var total = 0;
 
 		if(splittedLines.length == 0)
 		{
@@ -69,7 +72,6 @@ window.onload = function(e){
 			if(!(extraSplit[3] == "Online Deposits"))
 			{
 				transactions.push(new Transaction(splittedLines[i]));
-				total += parseFloat(extraSplit[1]);
 			}
 		}
 		//console.log("Total : " + total);
@@ -81,7 +83,7 @@ window.onload = function(e){
 		fileDisplayArea.textContent =  "Total Remaining: $" + getFinalAmount().toFixed(2)  + " (WARNING: Rollover may have been incorrectly included here. For 100% accuracy please check EServices)\n"  
 									 + "Average Spent per Day: $" + getAvgPerDay().toFixed(2) + "\n" 
 									 + "Amount you can spend per day: $" + getSpendPerDayEnd().toFixed(2) + "\n" 
-									 + "Total Spent: $" + total.toFixed(2);
+									 + "Total Spent: $" + getTotal().toFixed(2);
 
 		//Create chart
 		makeSpendGraph(transactions);
@@ -117,6 +119,22 @@ function dropEvent(e)
 	//console.log("Dropping!\n");
 	reader.readAsText(e.dataTransfer.files[0]);
 }
+
+//Calculates the total a user has spent in the time period
+function getTotal()
+{
+	var sum = 0;
+	for(var i = 0; i < transactions.length; i++)
+	{
+		var tempDate = getUTC(transactions[i].date);
+		if (transactions[i].cost > 0 && tempDate > startUTC)
+		{
+			sum += transactions[i].cost;
+		}
+	}
+	return sum;
+}
+
 //Calculates and returns the amount the user has spent per day (NOT transaction)
 function getAvgPerDay()
 {
@@ -150,17 +168,20 @@ function getAvgPerDay()
 	var sum = 0;
 	for (var i = 0; i < parsedData.length; i++)
 	{
-		sum += parsedData[i][1];
+		if (parsedData[i][1] > 0)
+		{
+			sum += parsedData[i][1];
+		}
 	}
-	return sum / parsedData.length;
+
+	var numDays = (endUTC - startUTC) / (1000 * 60 * 60 * 24);
+	console.log("numDays: " + numDays);
+	return sum / numDays;
 }
 
 //Finds and returns the rollover amount between fall and spring semesters
 function getRollover()
 {
-	var startSearch = 1385856000000; // 12/1/2013
-	var	endSearch = 1390521600000; // 1/24/2014
-
 	var minDebit = ERROR_CODE;
 
 	for(var i = 0; i < transactions.length; i++)
@@ -187,7 +208,7 @@ function fixRollover()
 		return;
 	}
 
-	var startChange = 1390262400000; // Jan 21, 2014
+	var startChange = endSearch; // Jan 21, 2014
 
 	for(var i = 0; i < transactions.length; i++)
 	{
@@ -340,20 +361,23 @@ function convertData()
 		{
 			//Check for multiple transactions in a day
 			var utcDate = getUTC(transactions[i].date)
-			if(days.indexOf(utcDate) == -1)
-			{	
-				days.push(utcDate);
-				parsedData.push([utcDate, transactions[i].cost]);
-				//console.log("adding: " + utcDate + "," + transactions[i].cost);
-			}
-			else
+			if (utcDate > startUTC && utcDate < endUTC)
 			{
-				//console.log("else: " + transactions[i].cost);
-				for(var j = 0; j < parsedData.length; j++)
+				if(days.indexOf(utcDate) == -1)
+				{	
+					days.push(utcDate);
+					parsedData.push([utcDate, transactions[i].cost]);
+					//console.log("adding: " + utcDate + "," + transactions[i].cost);
+				}
+				else
 				{
-					if(parsedData[j][0] == utcDate)
+					//console.log("else: " + transactions[i].cost);
+					for(var j = 0; j < parsedData.length; j++)
 					{
-						parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+						if(parsedData[j][0] == utcDate)
+						{
+							parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+						}
 					}
 				}
 			}
@@ -506,20 +530,24 @@ function spendByDay(transactions)
 	{
 		//Check for multiple transactions in a day
 		var utcDate = getDayOfWeek(transactions[i].date)
-		if(days.indexOf(utcDate) == -1)
-		{	
-			days.push(utcDate);
-			parsedData.push([utcDate, transactions[i].cost]);
-			//console.log("adding: " + utcDate + "," + transactions[i].cost);
-		}
-		else
+		var cost = transactions[i].cost;
+		if (cost > 0)
 		{
-			//console.log("else: " + transactions[i].cost);
-			for(var j = 0; j < parsedData.length; j++)
+			if(days.indexOf(utcDate) == -1)
+			{	
+				days.push(utcDate);
+				parsedData.push([utcDate, transactions[i].cost]);
+				//console.log("adding: " + utcDate + "," + transactions[i].cost);
+			}
+			else
 			{
-				if(parsedData[j][0] == utcDate)
+				//console.log("else: " + transactions[i].cost);
+				for(var j = 0; j < parsedData.length; j++)
 				{
-					parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+					if(parsedData[j][0] == utcDate)
+					{
+						parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+					}
 				}
 			}
 		}
@@ -536,21 +564,25 @@ function spendByLoc(transactions)
 	for(var i = 0; i < transactions.length; i++)
 	{
 		//Check for multiple transactions in a day
-		var group = transactions[i].group
-		if(groups.indexOf(group) == -1)
-		{	
-			groups.push(group);
-			parsedData.push([group, transactions[i].cost]);
-			//console.log("adding: " + group + "," + transactions[i].cost);
-		}
-		else
+		var group = transactions[i].group;
+		var cost = transactions[i].cost;
+		if (cost > 0)
 		{
-			//console.log("else: " + transactions[i].cost);
-			for(var j = 0; j < parsedData.length; j++)
+			if(groups.indexOf(group) == -1)
+			{	
+				groups.push(group);
+				parsedData.push([group, transactions[i].cost]);
+				//console.log("adding: " + group + "," + transactions[i].cost);
+			}
+			else
 			{
-				if(parsedData[j][0] == group)
+				//console.log("else: " + transactions[i].cost);
+				for(var j = 0; j < parsedData.length; j++)
 				{
-					parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+					if(parsedData[j][0] == group)
+					{
+						parsedData[j][1] = transactions[i].cost + parsedData[j][1];
+					}
 				}
 			}
 		}
